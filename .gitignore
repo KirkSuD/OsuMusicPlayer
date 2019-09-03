@@ -1,0 +1,7 @@
+# not needed
+/.vs/
+/__pycache__/
+
+# personal data
+/copied_osu_db/
+/exported_csv/

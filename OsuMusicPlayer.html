@@ -1,0 +1,247 @@
+﻿<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>♪ osu! music player ♪</title>
+    <style>
+      body{
+        margin-left: 8%;
+        margin-right: 8%;
+        margin-top: 5%;
+        font-family: sans-serif;
+        font-size: 25px;
+      }
+       /* Style the tab */
+      .tab {
+        overflow: hidden;
+        border: 1px solid #ccc;
+        background-color: #f1f1f1;
+      }
+
+      /* Style the buttons that are used to open the tab content */
+      .tab button {
+        background-color: inherit;
+        float: left;
+        border: none;
+        outline: none;
+        cursor: pointer;
+        padding: 14px 16px;
+        transition: 0.3s;
+      }
+
+      /* Change background color of buttons on hover */
+      .tab button:hover {
+        background-color: #ddd;
+      }
+
+      /* Create an active/current tablink class */
+      .tab button.active {
+        background-color: #ccc;
+      }
+
+      /* Style the tab content */
+      .tabcontent {
+        display: none;
+        padding: 6px 12px;
+        border: 1px solid #ccc;
+        border-top: none;
+      }
+    </style>
+    <script>
+      var osudbJsLoaded = false;
+      var playq = [];
+      var playlists = [];
+      var currentPlaying;
+
+      function openTab(evt, tabName) {
+        // Declare all variables
+        var i, tabcontent, tablinks;
+
+        // Get all elements with class="tabcontent" and hide them
+        tabcontent = document.getElementsByClassName("tabcontent");
+        for (i = 0; i < tabcontent.length; i++) {
+          tabcontent[i].style.display = "none";
+        }
+
+        // Get all elements with class="tablinks" and remove the class "active"
+        tablinks = document.getElementsByClassName("tablinks");
+        for (i = 0; i < tablinks.length; i++) {
+          tablinks[i].className = tablinks[i].className.replace(" active", "");
+        }
+
+        // Show the current tab, and add an "active" class to the button that opened the tab
+        document.getElementById(tabName).style.display = "block";
+        evt.currentTarget.className += " active";
+
+        loadTabContent(tabName);
+      }
+
+      function loadTabContent(tabName) {
+        var tab = document.getElementById(tabName);
+        while (tab.firstChild) {
+          tab.removeChild(tab.firstChild); // remove all children of tab // https://stackoverflow.com/questions/3955229/remove-all-child-elements-of-a-dom-node-in-javascript
+        }
+
+        var divbar = document.createElement("div");
+
+        var img = document.createElement("img");
+        img.src = {
+          "Playq": "icons/queue.png",
+          "Playlists": "icons/list.png",
+          "Collections": "icons/folder.png",
+          "Songs": "icons/music.png",
+          "Artists": "icons/person.png"
+        }[tabName];
+        img.alt = (tabName==="Playq" ? "Play queue" : tabName);
+        divbar.appendChild(img);
+
+        var pp = document.createElement("p");
+        pp.style.display = "inline-block"; // https://stackoverflow.com/questions/13596821/css-align-images-and-text-on-same-line
+        pp.appendChild(document.createTextNode(tabName==="Playq" ? "Play queue" : tabName));
+        pp.onclick = function() {
+          openTab(tabName);
+        };
+        divbar.appendChild(pp);
+
+        tab.appendChild(divbar);
+
+        var songsdiv = document.createElement("div");
+        var i;
+        if (tabName === "Playq") {
+          for (i=0; i<playq.length; ++i) {
+            var sdiv = document.createElement("div");
+            var sname = document.createElement("p");
+            sname.appendChild(document.createTextNode(playq[i]["title"]));
+            sdiv.appendChild(sname);
+            if (i === currentPlaying) {
+              sdiv.style.backgroundColor = "#f1f1f1";
+            }
+            sdiv.onclick = function() {
+              openActionBar(tabName, sdiv, playq[i]);
+            };
+            songsdiv.appendChild(sdiv);
+          }
+        }
+        else if (tabName === "Playlists") {
+          for (i=0; i<playlists.length; ++i) {
+            var sdiv = document.createElement("div");
+            var sname = document.createElement("p");
+            sname.appendChild(document.createTextNode(playlists[i]["title"]));
+            sdiv.appendChild(sname);
+            if (i == currentPlaying) {
+              sdiv.style.backgroundColor = "#f1f1f1";
+            }
+            sdiv.onclick = function() {
+              openActionBar(tabName, sdiv, playq[i]);
+            };
+            songsdiv.appendChild(sdiv);
+          }
+        }
+        tab.appendChild(songsdiv);
+      }
+    </script>
+    <script src="osudb.js"></script>
+  </head>
+  <body>
+    <!-- tab: https://www.w3schools.com/howto/howto_js_tabs.asp -->
+    <div class="tab">
+      <button id="defaultOpen" class="tablinks" onclick="openTab(event, 'Playq')">
+        <img src="icons/queue.png" alt="Play queue" onclick="" />
+      </button>
+
+      <button class="tablinks" onclick="openTab(event, 'Playlists')">
+        <img src="icons/list.png" alt="Playlists" onclick="" />
+      </button>
+
+      <button class="tablinks" onclick="openTab(event, 'Collections')">
+        <img src="icons/folder.png" alt="Collections" onclick="" />
+      </button>
+
+      <button class="tablinks" onclick="openTab(event, 'Songs')">
+        <img src="icons/music.png" alt="Songs" onclick="" />
+      </button>
+
+      <button class="tablinks" onclick="openTab(event, 'Artists')">
+        <img src="icons/person.png" alt="Artists" onclick="" />
+      </button>
+    </div>
+
+    <div id="Playq" class="tabcontent">
+      <h3>Playq</h3>
+      <p>Playq</p>
+    </div>
+
+    <div id="Playlists" class="tabcontent">
+      <h3>Playlists</h3>
+      <p>Playlists</p>
+    </div>
+  
+    <div id="Collections" class="tabcontent">
+      <h3>Collections</h3>
+      <p>Collections</p>
+    </div>
+    
+    <div id="Songs" class="tabcontent">
+      <h3>Songs</h3>
+      <p>Songs</p>
+    </div>
+  
+    <div id="Artists" class="tabcontent">
+      <h3>Artists</h3>
+      <p>Artists</p>
+    </div>
+        
+  <script>
+    document.getElementById("defaultOpen").click();
+  </script>
+  </body>
+</html>
+
+<!--
+(open), play, play next, info, add to playlist, search, sort by, (move, remove)
+
+playq  more: shuffle, info, add to playlist, remove all
+  song              remove
+playlists  more: add new
+  playlist   open + remove
+playlists / playlist  more: rename
+  collection open + remove
+  song              remove
+collections
+  collection open
+collections / collection
+  song
+songs
+  song
+artists
+  artist     open
+artists / artist
+  song
+
+icon: queue.png, list.png, folder.png, music.png, person.png
+  open, play, play_next, info, add_to_playlist, search, move, remove
+
+
+playq  shuffle, info, add to playlist, remove all, search
+  song
+    play, play next, info, add to playlist, remove (5)
+playlists  add new ## unorderable(sorted)
+  playlist
+    play, play next, open, add to playlist (4)
+playlists / playlist  info, remove (delete it), rename
+  collection
+    play, play next, open, add to playlist, remove (5)
+  song
+    play, play next, info, add to playlist, remove (5)
+collections  ## unorderable
+  collection
+    play, play next, open, add to playlist (4)
+collections / collection  info, search ## unorderable
+  song
+    play, play next, info, add to playlist (4)
+songs  search ## unorderable
+  song
+    play, play next, info, add to playlist (4)
+
+play, play next, info, remove, add to playlist, open
+-->
