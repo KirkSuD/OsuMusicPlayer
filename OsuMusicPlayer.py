@@ -162,5 +162,5 @@ Collections: %d""" % tuple(collection_data[:2]))
     wf.write("var osuSongs = "+json.dumps(get_songs(osu_data[6]))+";\n\n")
     wf.write("var osuCollections = "+json.dumps(get_collections(osu_data[6], collection_data[2]))+";\n")
     wf.close()
-    print("Done!")
+    input("Done!")
 
