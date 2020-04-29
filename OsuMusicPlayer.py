@@ -25,7 +25,11 @@ def list_folders(path):
 
 def get_song_from_beatmap(beatmap):
     ## return [beatmap[1], beatmap[3], beatmap[7], beatmap[45]] ## no-key, reduce file size
-    return {"artist": beatmap[1], "title": beatmap[3], "file": beatmap[7], "folder": beatmap[45]}
+
+    ## change @ 2020/04/12 due a change in Beatmap Information: Int: Size in bytes of the beatmap entry. Only present if version is less than 20191106.
+    ## so beatmap_info[0] disappears, all index has to -1.
+    #return {"artist": beatmap[1], "title": beatmap[3], "file": beatmap[7], "folder": beatmap[45]}
+    return {"artist": beatmap[0], "title": beatmap[2], "file": beatmap[6], "folder": beatmap[44]}
 
 def get_songs(beatmaps):
     """
@@ -34,7 +38,10 @@ def get_songs(beatmaps):
     folders = set()
     res = []
     for bm in beatmaps:
-        folder_name = bm[45]
+        ## change @ 2020/04/12 due a change in Beatmap Information: Int: Size in bytes of the beatmap entry. Only present if version is less than 20191106.
+        ## so beatmap_info[0] disappears, all index has to -1.
+        #folder_name = bm[45]
+        folder_name = bm[44]
         if folder_name in folders: continue
         folders.add(folder_name)
         res.append(get_song_from_beatmap(bm))
@@ -47,8 +54,12 @@ def generate_md5_to_song_dict(beatmaps):
     """
     res = {}
     for bm in beatmaps:
-        if bm[8] in res: raise ValueError("generate_md5_to_song_dict(beatmaps): md5 collision: "+bm[8])
-        res[bm[8]] = get_song_from_beatmap(bm)
+        ## change @ 2020/04/12 due a change in Beatmap Information: Int: Size in bytes of the beatmap entry. Only present if version is less than 20191106.
+        ## so beatmap_info[0] disappears, all index has to -1.
+        #if bm[8] in res: raise ValueError("generate_md5_to_song_dict(beatmaps): md5 collision: "+bm[8])
+        if bm[7] in res: raise ValueError("generate_md5_to_song_dict(beatmaps): md5 collision: "+bm[7])
+        #res[bm[8]] = get_song_from_beatmap(bm)
+        res[bm[7]] = get_song_from_beatmap(bm)
     return res
 
 def get_songs_from_md5(md5_to_song_dict, md5_list):
@@ -59,6 +70,8 @@ def get_songs_from_md5(md5_to_song_dict, md5_list):
     res = []
     for md5 in md5_list:
         song = md5_to_song_dict[md5]
+        ## change @ 2020/04/12 due a change in Beatmap Information: Int: Size in bytes of the beatmap entry. Only present if version is less than 20191106.
+        ## so beatmap_info[0] disappears, all index has to -1.
         ## if song[-1] in folder_set: continue ## no-key, reduce file size
         if song["folder"] in folder_set: continue
         ## folder_set.add(song[-1]) ## no-key, reduce file size
@@ -140,12 +153,18 @@ Collections: %d""" % tuple(collection_data[:2]))
 
     print()
     print("Folders not in osu!.db:")
-    db_folder_names = {bm[45] for bm in osu_data[6]}
+    ## change @ 2020/04/12 due a change in Beatmap Information: Int: Size in bytes of the beatmap entry. Only present if version is less than 20191106.
+    ## so beatmap_info[0] disappears, all index has to -1.
+    #db_folder_names = {bm[45] for bm in osu_data[6]}
+    db_folder_names = {bm[44] for bm in osu_data[6]}
     for i in sorted(list(set(list_folders(osu_songs_path))-db_folder_names)):
         print(i)
 
     print()
-    md5_count = len({bm[8] for bm in osu_data[6]})
+    ## change @ 2020/04/12 due a change in Beatmap Information: Int: Size in bytes of the beatmap entry. Only present if version is less than 20191106.
+    ## so beatmap_info[0] disappears, all index has to -1.
+    #md5_count = len({bm[8] for bm in osu_data[6]})
+    md5_count = len({bm[7] for bm in osu_data[6]})
     if md5_count != len(osu_data[6]): ## collision
         print("MD5 collision found!")
         print("Beatmaps: %d / MD5: %d" % (len(osu_data[6]), md5_count))
