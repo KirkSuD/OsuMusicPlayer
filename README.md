@@ -1,5 +1,11 @@
 # Osu! Music Player
 
+## Deprecated!
+
+Deprecated! Use the [Kaitai Struct Version](https://github.com/KirkSuD/osu_db_kaitai_struct) instead.
+
+## About
+
 A music player for osu!, deduplicate same songs.
 
 This copys and parses your `osu!.db` & `collection.db`, write json data to `osudb.js`,  
